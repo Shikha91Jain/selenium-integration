@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenium-integration
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - name: actuator
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+  selector:
+    app: selenium-integration

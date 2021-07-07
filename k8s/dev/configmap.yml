@@ -1,0 +1,26 @@
+apiVersion: v1
+data:
+  application.properties: |-
+    spring.jersey.application-path=/
+    server.port=8080
+    server.servlet.context-path=/
+    spring.jackson.default-property-inclusion=non-null
+    spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false
+    
+    remote.web.driver.url.chrome=http://192.168.2.8:5566/wd/hub
+    remote.web.driver.url.firefox=http://192.168.2.8:5566/wd/hub
+    
+    driver.implicit.wait.timeout=10
+    driver.page.load.wait.timeout=10
+    
+    sqs.aws.region=${sqs.region}
+    sqs.aws.credentials.access-key=${sqs.access-key}
+    sqs.aws.credentials.secret-key=${sqs.secret-key}
+    
+    test.queue.name=TestQueue
+    
+    logging.level.root=INFO
+    logging.level.com.test=DEBUG
+kind: ConfigMap
+metadata:
+  name: selenium-integration-configmap

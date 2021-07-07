@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selenium-integration
+spec:
+  selector:
+    matchLabels:
+      app: selenium-integration
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: selenium-integration
+    spec:
+      hostAliases:
+      - ip: "52.119.189.187"
+        hostnames:
+        - sqs.eu-central-1.amazonaws.com
+      containers:
+      - env:
+        - name: sqs.region
+          valueFrom:
+            secretKeyRef:
+              name: selenium-integration-secret
+              key: sqs.aws.region
+        - name: sqs.access-key
+          valueFrom:
+            secretKeyRef:
+              name: selenium-integration-secret
+              key: sqs.aws.credentials.access-key
+        - name: sqs.secret-key
+          valueFrom:
+            secretKeyRef:
+              name: selenium-integration-secret
+              key: sqs.aws.credentials.secret-key
+        name: selenium-integration
+        image: IMAGE_TAG
+        resources:
+          limits:
+            cpu: 250m
+            memory: 750Mi
+        livenessProbe:
+          httpGet:
+            path: /actuator/info
+            port: 9090
+          initialDelaySeconds: 200
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+          initialDelaySeconds: 200
+          periodSeconds: 10
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: selenium-integration-secret
+          mountPath: /mnt/secret
+        - name: selenium-integration-configmap
+          mountPath: /config
+      volumes:
+      - name: selenium-integration-secret
+        secret:
+          secretName: selenium-integration-secret
+      - name: selenium-integration-configmap
+        configMap:
+          name: selenium-integration-configmap
+          items:
+          - key: application.properties
+            path: application.properties
